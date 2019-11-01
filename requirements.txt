@@ -1,0 +1,100 @@
+********************************************************************
+
+First step: make the generic Dijkstra work with any graph type.  Build
+the graph library around this.
+
+********************************************************************
+
+The graph interface has to be new, because I don't want to use the
+Boost interface for the edge properties.
+
+The graph interface:
+
+* get the number of vertexes: boost::num_vertices(const graph),
+
+* get the number of edges: no such function
+
+********************************************************************
+
+There are graph types, where a vertex and edge object simply do not
+exist in the implementation.  Yet, we need something to describe that
+vertex or edge, and we call it a descriptor.
+
+********************************************************************
+
+If the user wants, every vertex and edge should be an object of the
+type provided by the user.
+
+********************************************************************
+
+Make the library easy to understand, use and extend.
+
+********************************************************************
+
+Filtered graph, and overlay graph.
+
+********************************************************************
+
+Different types:
+
+* make null_edge and null_vertex like null_ptr convert to the right
+  null edge or vertex implemented by the graph.
+
+* directed and undirected
+
+* adjacency list and neighbour matrix
+
+* based on a list or a vector
+
+* with built-in or standalone properties
+
+********************************************************************
+
+Dijkstra should be generic enought to allow for:
+
+* the predecessor to be a vertex - that's the standard case,
+
+* the predecessor to be an edge - that's the unusual case,
+
+* multigraphs,
+
+* visitors without performance degradation,
+
+* any kind of a label.
+
+Functions vertexes(g), edges(g), out_edges(g, e), in_edges(g, e)
+should return a rangle, so that they can be used in the foreach loop.
+
+Do away with the BGL property maps.
+
+The vertex and edge properties should be either part of the graph or
+be kept separate, like in BGL.  The properties should be kept in STL
+containers.  The properties should be accessed with the index operator
+[].
+
+Have a null vertex, which does not exist in the graph, but is useful
+to denote something special, like there is no predecessor.  BGL has a
+null vertex descriptor.
+
+Have a null edge, which does not exist in the graph, but is useful to
+denote something special, like an end of a path.  BGL does not have a
+null edge descriptor.
+
+********************************************************************
+
+Make it possible to have a graph type which disallows parallel edges.
+
+********************************************************************
+
+Do we really need an edge descriptor?
+
+It's not the same as the iterator, because a descriptor may describe
+edges that have no properties, no associated object with it, while an
+iterator always points to an object in a container.
+
+********************************************************************
+
+A default visitor (e.g., for Dijkstra), which would be a default
+functor or an std::function object.
+
+********************************************************************
