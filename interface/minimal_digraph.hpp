@@ -11,7 +11,7 @@
 // because the graph can be dense.
 //
 // In such a graph we need a way to refer to a vertex, and it's going
-// to be an unsigned integer.  The vertex
+// to be an unsigned integer.
 
 template <std::size_t N>
 using minimal_digraph = std::array<std::array<bool, N>, N>;
