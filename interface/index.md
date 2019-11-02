@@ -58,3 +58,9 @@ and undirected edges.
 
 Let's work out a minimal interface that will be enough for the graph
 implementations above, and be enough for the Dijkstra algorithm.
+
+We might not have an object for a vertex or an edge, yet we need to
+refer such to such a vertex or an edge somehow.
+
+Therefore we need a descriptor or an interator.
+
