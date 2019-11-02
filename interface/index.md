@@ -31,7 +31,8 @@ Here are a few things to consider:
 
 * should the graph be directed or not?
 
-* should a graph be static or dynamic?
+* should a graph be static or dynamic?  Is it implemented with
+  data structures which size doesn't change?
 
 * should it be a graph or a multigraph?
 
@@ -76,3 +77,16 @@ We might not have an object for a vertex or an edge, yet we need to
 refer to such a vertex or an edge somehow.  Therefore we need a
 *descriptor*.  The descriptor should allow us access properties of a
 vertex.
+
+# Descriptor: standalone or dependent?
+
+A descriptor of a vertex (or an edge) can be standalone or dependent.
+
+Standalone: you can get a vertex (or an edge) object without using the
+graph object.  For instance, a descriptor can be a pointer to a vertex
+object, and so we don't need the graph object.
+
+Dependent: you can get a vertex (or an edge) object, but you have to
+know the graph object.  For instance, if a vertex descriptor is an
+unsigned integer, than you need the graph object to locate the vertex
+object.
