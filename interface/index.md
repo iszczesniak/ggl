@@ -1,5 +1,9 @@
 # Interface
 
+There are many graph types, ways of implementing them, and storing and
+processing associated data.  Therefore, there is no single and easy
+way of implementing a graph.
+
 We want to have a minimal, simple, and intuitive graph intefrace that
 will allow to work with any graph implementation, and be sufficient
 for any algorithm.
@@ -33,6 +37,15 @@ Here are a few things to consider:
 
 * should it be a sparse or dense graph?
 
+Usually, a vertex or an edge has properties, such as cost, or
+capacity.  Here we have such choices:
+
+* should the properties be built into a graph?
+
+* should the properties be built into a vertex or an edge?
+
+* should the properties be stored in a vertex or an edge object?
+
 # Examples of graph implementations
 
 Here we study a few interesting graph models, and their
@@ -60,7 +73,6 @@ Let's work out a minimal interface that will be enough for the graph
 implementations above, and be enough for the Dijkstra algorithm.
 
 We might not have an object for a vertex or an edge, yet we need to
-refer such to such a vertex or an edge somehow.
-
-Therefore we need a descriptor or an interator.
-
+refer to such a vertex or an edge somehow.  Therefore we need a
+*descriptor*.  The descriptor should allow us access properties of a
+vertex.
