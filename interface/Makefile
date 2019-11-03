@@ -1,0 +1,1 @@
+all: minimal_digraph
