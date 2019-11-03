@@ -80,22 +80,12 @@ vertex.
 
 # Iterator must be standalone
 
-The iterator of a vertex (or an edge) must be standalone, so that we
-can use it loops like that:
+The vertex (or an edge) iterator must be standalone, so that we can
+use it loops like that:
 
 for (const auto &v: vertexes(g))
-  // Do sth with v, which is a vertex object or a vertex descriptor
+  // Do sth with v, which is a vertex object or a vertex proxy
 
-# Descriptor: standalone or dependent?
-
-A descriptor of a vertex (or an edge) can be standalone or dependent.
-
-Standalone: you can get a vertex (or an edge) object without using the
-graph object.  For instance, a descriptor can be a pointer to a vertex
-object, and so we don't need the graph object.
-
-Dependent: you can get a vertex (or an edge) object, but you have to
-know the graph object.  For instance, if a vertex descriptor is an
-unsigned integer, than you need the graph object to locate the vertex
-object.
-
+This implies that an iterator must be dereferenceable, i.e., when you
+apply the * operator, you must get a vertex (or an edge) object or
+proxy.
