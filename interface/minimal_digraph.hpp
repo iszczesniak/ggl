@@ -27,11 +27,11 @@ template <std::size_t N>
 using vertex_data = std::array<bool, N>;
 
 template <std::size_t N>
-using const_vertex_proxy = std::pair<minimal_digraph<N>::size_type,
-                                     const vertex_data<N> &>;
+using minimal_digraph = std::array<vertex_data<N>, N>;
 
 template <std::size_t N>
-using minimal_digraph = std::array<vertex_data<N>, N>;
+using const_vertex_proxy = std::pair<minimal_digraph<N>::size_type,
+                                     const vertex_data<N> &>;
 
 // Const vertex iterator.  In the const iterator we have to store both
 // the vertex index, and a const iterator.
