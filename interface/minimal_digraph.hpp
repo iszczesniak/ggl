@@ -1,6 +1,8 @@
 #ifndef MINIMAL_DIGRAPH_HPP
 #define MINIMAL_DIGRAPH_HPP
 
+#include <boost/range.hpp>
+
 #include <array>
 #include <utility>
 
@@ -48,8 +50,9 @@ template <std::size_t N>
 auto
 vertexes(const minimal_digraph<N> &g)
 {
-  return make_iterator_range(const_vertex_iterator<N>(0, g.begin()),
-                             const_vertex_iterator<N>(N, g.end()));
+  return
+    boost::make_iterator_range(const_vertex_iterator<N>(0, g.begin()),
+                               const_vertex_iterator<N>(N, g.end()));
 }
 
 template <std::size_t N>
@@ -66,6 +69,13 @@ const_vertex_proxy
 operator*(const const_vertex_iterator<N> &i)
 {
   return const_vertex_proxy(i.first, *i.second);
+}
+
+template <std::size_t N>
+minimal_digraph<N>::size_type
+get_index(const const_vertex_iterator<N> &i)
+{
+  return i.first;
 }
 
 #endif /* MINIMAL_DIGRAPH_HPP */
