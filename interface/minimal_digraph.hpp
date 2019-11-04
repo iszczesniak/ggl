@@ -58,7 +58,8 @@ struct const_vertex_iterator
 
   const_vertex_iterator
   (typename minimal_digraph<N>::size_type index,
-   typename minimal_digraph<N>::const_iterator iterator)
+   typename minimal_digraph<N>::const_iterator iterator):
+    m_index(index), m_iterator(iterator)
   {
   }
 
