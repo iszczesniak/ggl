@@ -10,13 +10,7 @@
 //
 // We store the graph information in a matrix with boolean values,
 // because the graph can be dense, and because it's not a
-// multidigraph.  The matrix is an array of arrays.  We can consider
-// the nested array as the vertex object.
-//
-//
-// There is also no object that describes an edge, but we need
-// something that uniquelly describes an edge, i.e., the edge proxy.
-// A pair of unsigned integers will be the proxy.
+// multidigraph.  The matrix is an array of arrays.
 
 template <std::size_t N>
 using vertex_data = std::array<bool, N>;
@@ -25,8 +19,16 @@ template <std::size_t N>
 using minimal_digraph = std::array<vertex_data<N>, N>;
 
 // In this graph there is no object that describes a vertex, but we
-// need something that uniquelly describes a vertex, i.e., the vertex
-// proxy.  An unsigned integer will be the proxy.
+// need something that we can use to operate on a vertex, i.e., the
+// vertex proxy.  What specifically we mean by operate, depends on
+// what the user wants to do.
+//
+// The vertex proxy should hold the information needed to operate on
+// the vertex.  We want to be able to:
+//
+// * get the index of the vertex, and
+//
+// * iterate over the out edges of the vertex.
 
 template <std::size_t N>
 struct const_vertex_proxy
@@ -123,5 +125,9 @@ get_index(const const_vertex_proxy<N> &i)
 {
   return i.m_index;
 }
+
+// There is also no object that describes an edge, but we need
+// something that uniquelly describes an edge, i.e., the edge proxy.
+// A pair of unsigned integers will be the proxy.
 
 #endif /* MINIMAL_DIGRAPH_HPP */
