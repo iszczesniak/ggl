@@ -11,5 +11,5 @@ main()
                           std::array<bool, 2>{true, false}};
 
   for(const auto &v: vertexes(g))
-    cout << get_index(v);
+    cout << "vertex index = " << get_index(v) << endl;
 }
