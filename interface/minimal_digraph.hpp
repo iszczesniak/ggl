@@ -1,8 +1,6 @@
 #ifndef MINIMAL_DIGRAPH_HPP
 #define MINIMAL_DIGRAPH_HPP
 
-#include <boost/range.hpp>
-
 #include <array>
 #include <utility>
 
@@ -30,7 +28,7 @@ template <std::size_t N>
 using minimal_digraph = std::array<vertex_data<N>, N>;
 
 template <std::size_t N>
-using const_vertex_proxy = std::pair<minimal_digraph<N>::size_type,
+using const_vertex_proxy = std::pair<typename minimal_digraph<N>::size_type,
                                      const vertex_data<N> &>;
 
 // Const vertex iterator.  In the const iterator we have to store both
@@ -42,8 +40,8 @@ using const_vertex_proxy = std::pair<minimal_digraph<N>::size_type,
 // We need the iterator, because we need to access the vertex_data.
 template <std::size_t N>
 using const_vertex_iterator =
-  std::pair<minimal_digraph<N>::size_type,
-            minimal_digraph<N>::const_iterator>;
+  std::pair<typename minimal_digraph<N>::size_type,
+            typename minimal_digraph<N>::const_iterator>;
 
 // Return a range of vertex iterators.
 template <std::size_t N>
@@ -56,7 +54,7 @@ vertexes(const minimal_digraph<N> &g)
 }
 
 template <std::size_t N>
-const_vertex_iterator &
+const_vertex_iterator<N> &
 operator++(const_vertex_iterator<N> &i)
 {
   ++i.first;
@@ -65,14 +63,14 @@ operator++(const_vertex_iterator<N> &i)
 }
 
 template <std::size_t N>
-const_vertex_proxy
+const_vertex_proxy<N>
 operator*(const const_vertex_iterator<N> &i)
 {
-  return const_vertex_proxy(i.first, *i.second);
+  return const_vertex_proxy<N>(i.first, *i.second);
 }
 
 template <std::size_t N>
-minimal_digraph<N>::size_type
+auto
 get_index(const const_vertex_iterator<N> &i)
 {
   return i.first;
