@@ -139,42 +139,45 @@ get_descriptor(const const_vertex_proxy<N> &i)
 // In this graph there is no object that describes an edge, but we
 // need something to represent an edge: the edge proxy.
 //
-// The edge proxy should hold the information needed to use the
-// vertex.  We want to be able to:
+// The edge proxy should hold the information needed to use the edge.
+// We want to be able to:
 //
 // * get the edge source and target.
 
 template <std::size_t N>
-struct const_vertex_proxy
+struct const_edge_proxy
 {
-  typename minimal_digraph<N>::size_type m_index;
-  const vertex_data<N> &m_vertex_data;
+  typename minimal_digraph<N>::size_type m_source;
+  typename minimal_digraph<N>::size_type m_target;
 
-  const_vertex_proxy(typename minimal_digraph<N>::size_type index,
-                     const vertex_data<N> &vertex_data):
-    m_index(index), m_vertex_data(vertex_data)
+  const_vertex_proxy(typename minimal_digraph<N>::size_type source,
+                     typename minimal_digraph<N>::size_type target) :
+    m_target(target), m_source(source)
   {
   }
 };
 
-// Const vertex iterator.  In the const iterator we have to store both
-// the vertex index, and a const iterator.
+// Const edge iterator stores:
 //
-// We need the vertex index, because we need to put it in the vertex
-// proxy, when we dereference the iterator.
+// * the source index, which we put into the edge proxy, when
+//   dereferencing this iterator,
 //
-// We need the iterator, because we need to access the vertex_data.
+// * the const iterator to the vertex_data.
 
 template <std::size_t N>
-struct const_vertex_iterator
+struct const_edge_iterator
 {
-  typename minimal_digraph<N>::size_type m_index;
-  typename minimal_digraph<N>::const_iterator m_iterator;
+  // The vertex index of the 
+  typename minimal_digraph<N>::size_type m_source;
+  typename minimal_digraph<N>::size_type m_target;
+  // Iterator to the vertex data.
+  typename vertex_data<N>::const_iterator m_iterator;
 
-  const_vertex_iterator
-  (typename minimal_digraph<N>::size_type index,
+  const_edge_iterator
+  (typename minimal_digraph<N>::size_type source,
+   typename minimal_digraph<N>::size_type target,
    typename minimal_digraph<N>::const_iterator iterator):
-    m_index(index), m_iterator(iterator)
+    m_source(source), m_target(target), m_iterator(iterator)
   {
   }
 
@@ -189,13 +192,13 @@ struct const_vertex_iterator
   bool
   operator!=(const const_vertex_iterator &i) const
   {
-    return m_index != i.m_index;
+    return m_target != i.m_target && m_source != i.m_source;
   }
 
-  const_vertex_proxy<N>
+  const_edge_proxy<N>
   operator*() const
   {
-    return const_vertex_proxy<N>(m_index, *m_iterator);
+    return const_edge_proxy<N>(m_source, m_target);
   }
 };
 
