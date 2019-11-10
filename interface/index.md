@@ -89,3 +89,15 @@ for (const auto &v: vertexes(g))
 This implies that an iterator must be dereferenceable, i.e., when you
 apply the * operator, you must get a vertex (or an edge) object or
 proxy.
+
+# Vertex and edge descriptor
+
+We might want to be able to uniquelly identify a vertex or an edge,
+and for this we need a descriptor, which we could use to:
+
+* address elements in a container which stores some property of an
+  edge or a vertex,
+
+* get the vertex or edge object in a graph.
+
+Descriptors, however, and not required for every graph.
