@@ -187,13 +187,16 @@ struct const_edge_iter
   const_edge_iter &
   operator++()
   {
+    ++m_target;
+    ++m_iter;
+    adjust(*this);
     return *this;
   }
 
   bool
   operator!=(const const_edge_iter &i) const
   {
-    return m_target != i.m_target && m_source != i.m_source;
+    return m_target != i.m_target || m_source != i.m_source;
   }
 
   const_edge_proxy<N>
@@ -202,6 +205,14 @@ struct const_edge_iter
     return const_edge_proxy<N>(m_source, m_target);
   }
 };
+
+template <std::size_t N>
+void
+adjust(const_edge_iter<N> &i)
+{
+  while(!*i.m_iter && i.m_target != N)
+    ++i;
+}
 
 // Const iterator range.
 
@@ -236,9 +247,11 @@ template <std::size_t N>
 auto
 edges(const const_vertex_proxy<N> &v)
 {
+  const_edge_iter<N> begin(v.m_index, 0, v.m_data.begin());
+  adjust(begin);
+
   return
-    const_edge_iter_range<N>(const_edge_iter<N>(v.m_index, 0,
-                                                v.m_data.begin()),
+    const_edge_iter_range<N>(begin,
                              const_edge_iter<N>(v.m_index, N,
                                                 v.m_data.end()));
 }
