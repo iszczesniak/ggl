@@ -54,28 +54,28 @@ struct const_vertex_proxy
 // We need the iterator, because we need to access the vertex_data.
 
 template <std::size_t N>
-struct const_vertex_iterator
+struct const_vertex_iter
 {
   typename minimal_digraph<N>::size_type m_index;
-  typename minimal_digraph<N>::const_iterator m_iterator;
+  typename minimal_digraph<N>::const_iterator m_iter;
 
-  const_vertex_iterator
+  const_vertex_iter
   (typename minimal_digraph<N>::size_type index,
    typename minimal_digraph<N>::const_iterator iterator):
-    m_index(index), m_iterator(iterator)
+    m_index(index), m_iter(iterator)
   {
   }
 
-  const_vertex_iterator &
+  const_vertex_iter &
   operator++()
   {
     ++m_index;
-    ++m_iterator;
+    ++m_iter;
     return *this;
   }
 
   bool
-  operator!=(const const_vertex_iterator &i) const
+  operator!=(const const_vertex_iter &i) const
   {
     return m_index != i.m_index;
   }
@@ -83,31 +83,31 @@ struct const_vertex_iterator
   const_vertex_proxy<N>
   operator*() const
   {
-    return const_vertex_proxy<N>(m_index, *m_iterator);
+    return const_vertex_proxy<N>(m_index, *m_iter);
   }
 };
 
 // Const iterator range.
 
 template <std::size_t N>
-struct const_iterator_range
+struct const_iter_range
 {
-  const_vertex_iterator<N> m_begin;
-  const_vertex_iterator<N> m_end;
+  const_vertex_iter<N> m_begin;
+  const_vertex_iter<N> m_end;
 
-  const_iterator_range(const_vertex_iterator<N> begin,
-                       const_vertex_iterator<N> end):
+  const_iter_range(const_vertex_iter<N> begin,
+                   const_vertex_iter<N> end):
     m_begin(begin), m_end(end)
   {
   };
 
-  const_vertex_iterator<N>
+  const_vertex_iter<N>
   begin() const
   {
     return m_begin;
   }
 
-  const_vertex_iterator<N>
+  const_vertex_iter<N>
   end() const
   {
     return m_end;
@@ -121,8 +121,8 @@ auto
 vertexes(const minimal_digraph<N> &g)
 {
   return
-    const_iterator_range<N>(const_vertex_iterator<N>(0, g.begin()),
-                            const_vertex_iterator<N>(N, g.end()));
+    const_iter_range<N>(const_vertex_iter<N>(0, g.begin()),
+                        const_vertex_iter<N>(N, g.end()));
 }
 
 template <std::size_t N>
@@ -160,37 +160,39 @@ struct const_edge_proxy
 // Const edge iterator stores:
 //
 // * the source index, which we put into the edge proxy, when
-//   dereferencing this iterator,
+//   we dereference this iterator,
+//
+// * the target index we iterate with,
 //
 // * the const iterator to the vertex_data.
 
 template <std::size_t N>
-struct const_edge_iterator
+struct const_edge_iter
 {
   // The vertex index of the 
   typename minimal_digraph<N>::size_type m_source;
   typename minimal_digraph<N>::size_type m_target;
   // Iterator to the vertex data.
-  typename vertex_data<N>::const_iterator m_iterator;
+  typename vertex_data<N>::const_iterator m_iter;
 
-  const_edge_iterator
+  const_edge_iter
   (typename minimal_digraph<N>::size_type source,
    typename minimal_digraph<N>::size_type target,
    typename minimal_digraph<N>::const_iterator iterator):
-    m_source(source), m_target(target), m_iterator(iterator)
+    m_source(source), m_target(target), m_iter(iterator)
   {
   }
 
-  const_vertex_iterator &
+  const_vertex_iter &
   operator++()
   {
     ++m_index;
-    ++m_iterator;
+    ++m_iter;
     return *this;
   }
 
   bool
-  operator!=(const const_vertex_iterator &i) const
+  operator!=(const const_vertex_iter &i) const
   {
     return m_target != i.m_target && m_source != i.m_source;
   }
@@ -205,24 +207,24 @@ struct const_edge_iterator
 // Const iterator range.
 
 template <std::size_t N>
-struct const_iterator_range
+struct const_edge_iter_range
 {
-  const_vertex_iterator<N> m_begin;
-  const_vertex_iterator<N> m_end;
+  const_edge_iter<N> m_begin;
+  const_edge_iter<N> m_end;
 
-  const_iterator_range(const_vertex_iterator<N> begin,
-                       const_vertex_iterator<N> end):
+  const_iter_range(const_edge_iter<N> begin,
+                   const_edge_iter<N> end):
     m_begin(begin), m_end(end)
   {
   };
 
-  const_vertex_iterator<N>
+  const_edge_iter<N>
   begin() const
   {
     return m_begin;
   }
 
-  const_vertex_iterator<N>
+  const_edge_iter<N>
   end() const
   {
     return m_end;
@@ -236,8 +238,8 @@ auto
 vertexes(const minimal_digraph<N> &g)
 {
   return
-    const_iterator_range<N>(const_vertex_iterator<N>(0, g.begin()),
-                            const_vertex_iterator<N>(N, g.end()));
+    const_vertex_iter_range<N>(const_vertex_iter<N>(0, g.begin()),
+                               const_vertex_iter<N>(N, g.end()));
 }
 
 template <std::size_t N>
