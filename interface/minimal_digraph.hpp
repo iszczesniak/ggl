@@ -151,8 +151,8 @@ struct const_edge_proxy
   typename minimal_digraph<N>::size_type m_source;
   typename minimal_digraph<N>::size_type m_target;
 
-  const_vertex_proxy(typename minimal_digraph<N>::size_type source,
-                     typename minimal_digraph<N>::size_type target):
+  const_edge_proxy(typename minimal_digraph<N>::size_type source,
+                   typename minimal_digraph<N>::size_type target):
     m_target(target), m_source(source)
   {
   }
@@ -179,7 +179,7 @@ struct const_edge_iter
   const_edge_iter
   (typename minimal_digraph<N>::size_type source,
    typename minimal_digraph<N>::size_type target,
-   typename minimal_digraph<N>::const_iterator iter):
+   typename vertex_data<N>::const_iterator iter):
     m_source(source), m_target(target), m_iter(iter)
   {
   }
@@ -187,8 +187,6 @@ struct const_edge_iter
   const_edge_iter &
   operator++()
   {
-    ++m_index;
-    ++m_iter;
     return *this;
   }
 
@@ -213,8 +211,8 @@ struct const_edge_iter_range
   const_edge_iter<N> m_begin;
   const_edge_iter<N> m_end;
 
-  const_iter_range(const_edge_iter<N> begin,
-                   const_edge_iter<N> end):
+  const_edge_iter_range(const_edge_iter<N> begin,
+                        const_edge_iter<N> end):
     m_begin(begin), m_end(end)
   {
   };
@@ -236,13 +234,27 @@ struct const_edge_iter_range
 
 template <std::size_t N>
 auto
-edges(const vertex_proxy<N> &v)
+edges(const const_vertex_proxy<N> &v)
 {
   return
-    const_edge_iter_range<N>(const_edge_iter<N>(v.m_source, 0,
+    const_edge_iter_range<N>(const_edge_iter<N>(v.m_index, 0,
                                                 v.m_data.begin()),
-                             const_edge_iter<N>(v.m_source, N,
+                             const_edge_iter<N>(v.m_index, N,
                                                 v.m_data.end()));
+}
+
+template <std::size_t N>
+auto
+get_source(const const_edge_proxy<N> &e)
+{
+  return e.m_source;
+}
+
+template <std::size_t N>
+auto
+get_target(const const_edge_proxy<N> &e)
+{
+  return e.m_target;
 }
 
 #endif /* MINIMAL_DIGRAPH_HPP */

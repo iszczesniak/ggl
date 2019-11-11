@@ -16,8 +16,8 @@ main()
 
       for(const auto &e: edges(v))
         {
-          cout << "edge source = " << get_source(v) << endl;
-          cout << "edge target = " << get_target(v) << endl;
+          cout << "edge source = " << get_source(e) << endl;
+          cout << "edge target = " << get_target(e) << endl;
         }
     }
 }
