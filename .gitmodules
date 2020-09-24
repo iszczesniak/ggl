@@ -1,0 +1,3 @@
+[submodule "graph1"]
+	path = graph1
+	url = https://github.com/iszczesniak/graph1
