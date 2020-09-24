@@ -1,4 +1,4 @@
-#include "minimal_digraph.hpp"
+#include "minimal_digraph2.hpp"
 
 #include <iostream>
 
@@ -7,8 +7,8 @@ using namespace std;
 int
 main()
 {
-  minimal_digraph<2> g = {std::array<bool, 2>{true, false},
-                          std::array<bool, 2>{true, false}};
+  minimal_digraph2<2> g = {vertex_data<2>(0, std::array<bool, 2>{true, false}),
+                           vertex_data<2>(1, std::array<bool, 2>{true, false})};
 
   for(const auto &v: vertexes(g))
     {

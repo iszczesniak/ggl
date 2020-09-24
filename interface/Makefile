@@ -1,1 +1,1 @@
-all: minimal_digraph
+all: minimal_digraph minimal_digraph2

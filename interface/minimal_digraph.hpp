@@ -6,7 +6,8 @@
 
 // This is a minimal digraph.  It's minimal, because it has no
 // properties associated with a vertex, and with an edge.  We only
-// know if an edge exists.
+// know if an edge exists.  The graph is static: the number of
+// vertexes doesn't grow.
 //
 // We store the graph information in a matrix with boolean values,
 // because the graph can be dense, and because it's not a
@@ -18,15 +19,17 @@ using vertex_data = std::array<bool, N>;
 template <std::size_t N>
 using minimal_digraph = std::array<vertex_data<N>, N>;
 
+// -------------------------------------------------------------------
+// Vertex implementation
+// -------------------------------------------------------------------
+
 // In this graph there is no object that describes a vertex, but we
-// need something that we can use to operate on a vertex, i.e., the
-// vertex proxy.  What specifically we mean by operate, depends on
-// what the user wants to do.
+// need something to represent a vertex: a vertex proxy.
 //
-// The vertex proxy should hold the information needed to operate on
-// the vertex.  We want to be able to:
+// The vertex proxy should hold the information needed to use the
+// vertex.  We want to be able to:
 //
-// * get the index of the vertex, and
+// * get the descriptor (index) of the vertex, and
 //
 // * iterate over the out edges of the vertex.
 
@@ -34,11 +37,11 @@ template <std::size_t N>
 struct const_vertex_proxy
 {
   typename minimal_digraph<N>::size_type m_index;
-  const vertex_data<N> &m_vertex_data;
+  const vertex_data<N> &m_data;
 
   const_vertex_proxy(typename minimal_digraph<N>::size_type index,
-                     const vertex_data<N> &vertex_data):
-    m_index(index), m_vertex_data(vertex_data)
+                     const vertex_data<N> &data):
+    m_index(index), m_data(data)
   {
   }
 };
@@ -50,29 +53,30 @@ struct const_vertex_proxy
 // proxy, when we dereference the iterator.
 //
 // We need the iterator, because we need to access the vertex_data.
+
 template <std::size_t N>
-struct const_vertex_iterator
+struct const_vertex_iter
 {
   typename minimal_digraph<N>::size_type m_index;
-  typename minimal_digraph<N>::const_iterator m_iterator;
+  typename minimal_digraph<N>::const_iterator m_iter;
 
-  const_vertex_iterator
+  const_vertex_iter
   (typename minimal_digraph<N>::size_type index,
-   typename minimal_digraph<N>::const_iterator iterator):
-    m_index(index), m_iterator(iterator)
+   typename minimal_digraph<N>::const_iterator iter):
+    m_index(index), m_iter(iter)
   {
   }
 
-  const_vertex_iterator &
+  const_vertex_iter &
   operator++()
   {
     ++m_index;
-    ++m_iterator;
+    ++m_iter;
     return *this;
   }
 
   bool
-  operator!=(const const_vertex_iterator &i) const
+  operator!=(const const_vertex_iter &i) const
   {
     return m_index != i.m_index;
   }
@@ -80,30 +84,31 @@ struct const_vertex_iterator
   const_vertex_proxy<N>
   operator*() const
   {
-    return const_vertex_proxy<N>(m_index, *m_iterator);
+    return const_vertex_proxy<N>(m_index, *m_iter);
   }
 };
 
 // Const iterator range.
-template <std::size_t N>
-struct const_iterator_range
-{
-  const_vertex_iterator<N> m_begin;
-  const_vertex_iterator<N> m_end;
 
-  const_iterator_range(const_vertex_iterator<N> begin,
-                       const_vertex_iterator<N> end):
+template <std::size_t N>
+struct const_iter_range
+{
+  const_vertex_iter<N> m_begin;
+  const_vertex_iter<N> m_end;
+
+  const_iter_range(const_vertex_iter<N> begin,
+                   const_vertex_iter<N> end):
     m_begin(begin), m_end(end)
   {
   };
 
-  const_vertex_iterator<N>
+  const_vertex_iter<N>
   begin() const
   {
     return m_begin;
   }
 
-  const_vertex_iterator<N>
+  const_vertex_iter<N>
   end() const
   {
     return m_end;
@@ -111,24 +116,158 @@ struct const_iterator_range
 };
 
 // Return a range of vertex iterators.
+
 template <std::size_t N>
 auto
 vertexes(const minimal_digraph<N> &g)
 {
   return
-    const_iterator_range<N>(const_vertex_iterator<N>(0, g.begin()),
-                            const_vertex_iterator<N>(N, g.end()));
+    const_iter_range<N>(const_vertex_iter<N>(0, g.begin()),
+                        const_vertex_iter<N>(N, g.end()));
 }
 
 template <std::size_t N>
 auto
-get_index(const const_vertex_proxy<N> &i)
+get_descriptor(const const_vertex_proxy<N> &i)
 {
   return i.m_index;
 }
 
-// There is also no object that describes an edge, but we need
-// something that uniquelly describes an edge, i.e., the edge proxy.
-// A pair of unsigned integers will be the proxy.
+// -------------------------------------------------------------------
+// Edge implementation
+// -------------------------------------------------------------------
+
+// In this graph there is no object that describes an edge, but we
+// need something to represent an edge: the edge proxy.
+//
+// The edge proxy should hold the information needed to use the edge.
+// We want to be able to:
+//
+// * get the edge source and target.
+
+template <std::size_t N>
+struct const_edge_proxy
+{
+  typename minimal_digraph<N>::size_type m_source;
+  typename minimal_digraph<N>::size_type m_target;
+
+  const_edge_proxy(typename minimal_digraph<N>::size_type source,
+                   typename minimal_digraph<N>::size_type target):
+    m_target(target), m_source(source)
+  {
+  }
+};
+
+// Const edge iterator stores:
+//
+// * the source index, which we put into the edge proxy, when
+//   we dereference this iterator,
+//
+// * the target index we iterate with,
+//
+// * the const iterator to the vertex_data.
+
+template <std::size_t N>
+struct const_edge_iter
+{
+  // The source vertex: this 
+  typename minimal_digraph<N>::size_type m_source;
+  typename minimal_digraph<N>::size_type m_target;
+  // Iterator to the vertex data of the source vertex.
+  typename vertex_data<N>::const_iterator m_iter;
+
+  const_edge_iter
+  (typename minimal_digraph<N>::size_type source,
+   typename minimal_digraph<N>::size_type target,
+   typename vertex_data<N>::const_iterator iter):
+    m_source(source), m_target(target), m_iter(iter)
+  {
+  }
+
+  const_edge_iter &
+  operator++()
+  {
+    ++m_target;
+    ++m_iter;
+    adjust(*this);
+    return *this;
+  }
+
+  bool
+  operator!=(const const_edge_iter &i) const
+  {
+    return m_target != i.m_target || m_source != i.m_source;
+  }
+
+  const_edge_proxy<N>
+  operator*() const
+  {
+    return const_edge_proxy<N>(m_source, m_target);
+  }
+};
+
+template <std::size_t N>
+void
+adjust(const_edge_iter<N> &i)
+{
+  while(!*i.m_iter && i.m_target != N)
+    ++i;
+}
+
+// Const iterator range.
+
+template <std::size_t N>
+struct const_edge_iter_range
+{
+  const_edge_iter<N> m_begin;
+  const_edge_iter<N> m_end;
+
+  const_edge_iter_range(const_edge_iter<N> begin,
+                        const_edge_iter<N> end):
+    m_begin(begin), m_end(end)
+  {
+  };
+
+  const_edge_iter<N>
+  begin() const
+  {
+    return m_begin;
+  }
+
+  const_edge_iter<N>
+  end() const
+  {
+    return m_end;
+  }
+};
+
+// Return a range of vertex iterators.
+
+template <std::size_t N>
+auto
+edges(const const_vertex_proxy<N> &v)
+{
+  const_edge_iter<N> begin(v.m_index, 0, v.m_data.begin());
+  adjust(begin);
+
+  return
+    const_edge_iter_range<N>(begin,
+                             const_edge_iter<N>(v.m_index, N,
+                                                v.m_data.end()));
+}
+
+template <std::size_t N>
+auto
+get_source(const const_edge_proxy<N> &e)
+{
+  return e.m_source;
+}
+
+template <std::size_t N>
+auto
+get_target(const const_edge_proxy<N> &e)
+{
+  return e.m_target;
+}
 
 #endif /* MINIMAL_DIGRAPH_HPP */
