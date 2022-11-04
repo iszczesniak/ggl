@@ -101,3 +101,9 @@ and for this we need a descriptor, which we could use to:
 * get the vertex or edge object in a graph.
 
 Descriptors, however, and not required for every graph.
+
+# Allow for const properties.
+
+Some properties (like a weight of an edge or vertex) should be const
+(only initialized).  For instance, once a network is loaded, we should
+not modify the weight of an edge.
